@@ -10,7 +10,7 @@
 // background colour (style preset `text` + `colors`), which we write to the
 // board's 4-line x 8-character button displays.
 
-import { createRequire } from 'node:module'
+import { HID } from 'node-hid'
 
 import {
   VID,
@@ -30,9 +30,6 @@ import {
   buildLayout,
   CMD,
 } from './protocol.js'
-
-const require = createRequire(import.meta.url)
-const { HID } = require('node-hid')
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
