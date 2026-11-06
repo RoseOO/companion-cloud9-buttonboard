@@ -254,6 +254,11 @@ Use Companion's module build/packaging workflow (or ship the folder with
 - **Grid prompt only grows.** Companion's “Resize grid to fit” expands the
   current bounds; from the default 8×4 grid it produces 12×4, not 12×2. Set the
   grid to 12×2 once manually.
+- **Text colour is not exposed by the public API.** The surface draw props
+  contain only the background `color`, text, and rendered image; Companion's
+  HTTP API has only style *setters* (no getter for button style). The board
+  therefore chooses black or white text from the background brightness instead
+  of mirroring a per-button text colour.
 - **Error border is inferred.** Companion does not expose the connection/button
   error flag to surface modules; the red border is derived from the rendered
   red error icon in the 32×32 bitmap. If no icon is rendered, no red border.
