@@ -1,6 +1,6 @@
 {
   "name": "companion-cloud9-buttonboard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Bitfocus Companion surface module for the Cloud9 / Symphony 24-button board (model 0301)",
   "type": "module",
   "main": "main.js",

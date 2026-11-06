@@ -187,7 +187,27 @@ returns 204 and nothing happens.
   is empty, Companion returns 204 and no action runs.
 - Page hotkeys work by stepping with Companion's `changePage` API; set them to
   pages that actually exist. They are best-effort for non-contiguous pages.
-- The status LED (index 3) is on while the surface is open.
+- The status LED (index 3) is on by default; see **LEDs** below.
+
+## LEDs
+
+The board has four green LEDs. They are exposed as surface **output variables**
+(`led0`–`led3`), so Companion expressions can drive them individually from the
+surface settings:
+
+| variable | LED |
+|----------|-----|
+| `led0` | left handset |
+| `led1` | right handset |
+| `led2` | speaker |
+| `led3` | status |
+
+Set an expression to `1`, `true` or `on` to light that LED; `0`, `false`,
+`off`, an empty expression or `$NA` turns it off. Values are updated live.
+
+`led3` is on by default as a status light until its expression produces a
+value. The LEDs are on/off only — the firmware accepts an intensity value but
+does not visibly dim them.
 
 ## Surface lock / PIN code
 
@@ -243,4 +263,4 @@ Use Companion's module build/packaging workflow (or ship the folder with
   they are not part of the 12×2 page layout.
 - Page targets only press controls that exist on the current page grid; an
   empty target returns 204 and does nothing.
-- The 4 board LEDs are not yet driven by Companion.
+- The 4 board LEDs are driven by Companion expressions on `led0`–`led3`.

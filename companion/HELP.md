@@ -12,6 +12,8 @@ Companion surface integration for the Cloud9 / Symphony 24-button board
   page/row/column placeholder are available in the surface settings.
 - The surface lock / PIN screen uses the left bank: 1-5 on top, 6-0 below,
   with the entry display and a `LOCKED` label.
+- The four green LEDs are driven by Companion expressions on the surface
+  variables `led0`-`led3`.
 - The board's corner page display follows the Companion page.
 - Brightness controls the LCD backlight.
 

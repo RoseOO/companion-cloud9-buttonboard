@@ -33,6 +33,17 @@ import {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+function ledValue(value) {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return Number.isFinite(value) && value !== 0
+  const s = String(value ?? '').trim().toLowerCase()
+  if (!s || s === '0' || s === 'false' || s === 'off' || s === 'no' || s === '$na') {
+    return false
+  }
+  const n = Number(s)
+  return Number.isFinite(n) ? n !== 0 : true
+}
+
 function imageHasErrorIcon(image, w = 32, h = 32) {
   if (!image || image.length < w * h * 3) return false
   // Companion draws its error as a red triangle in the top-right corner.
@@ -99,6 +110,13 @@ const CONFIG_FIELDS = [
   },
   {
     type: 'static-text',
+    id: 'ledInfo',
+    label: 'LEDs',
+    value:
+      'The four green LEDs are driven by the surface variables led0-led3. Set each to 1/on to light it. If led3 is never set, it stays on as a status LED.',
+  },
+  {
+    type: 'static-text',
     id: 'targetInfo',
     label: 'Second use / Companion targets',
     value:
@@ -149,6 +167,15 @@ const PINCODE_MAP = {
   9: '1/3',
 }
 
+// Companion expressions can drive these to control the four green LEDs.
+// 0 = left handset, 1 = right handset, 2 = speaker, 3 = status.
+const LED_VARIABLES = [
+  { id: 'led0', type: 'output', name: 'LED 1 (left handset)', description: '1/on to light the LED.' },
+  { id: 'led1', type: 'output', name: 'LED 2 (right handset)', description: '1/on to light the LED.' },
+  { id: 'led2', type: 'output', name: 'LED 3 (speaker)', description: '1/on to light the LED.' },
+  { id: 'led3', type: 'output', name: 'LED 4 (status)', description: '1/on to light the LED.' },
+]
+
 class Cloud9Surface {
   constructor(surfaceId, pluginInfo, context) {
     this.surfaceId = surfaceId
@@ -192,6 +219,9 @@ class Cloud9Surface {
     this._heldTargets = new Map()
     this._alignOverrides = new Map()
     this._lockLabelShown = false
+    // LED 4 is on by default as a status light until Companion drives led3.
+    this._externalLeds = [false, false, false, true]
+    this._ledState = ['', '', '', '']
   }
 
   // -------------------------------------------------------------- lifecycle
@@ -202,9 +232,9 @@ class Cloud9Surface {
       if (!this._closed) this._context.disconnect(err instanceof Error ? err : new Error(String(err)))
     })
 
-    // backlight on, status LED, ask for firmware/status (ignored unless logged)
+    // backlight on, LEDs from their variables, ask for firmware/status
     await this._write(lcdPacket({ enable: true, brightness: this._brightness, page: this._page }))
-    await this._write(ledPacket({ index: 3, enable: true }))
+    this._renderLeds()
     await this._write(statusRequest())
   }
 
@@ -240,6 +270,13 @@ class Cloud9Surface {
     } catch {
       // ignore
     }
+    for (let i = 0; i < 4; i++) {
+      try {
+        await this._write(ledPacket({ index: i, enable: false }))
+      } catch {
+        // ignore
+      }
+    }
     this._closed = true
     try {
       this._hid?.close()
@@ -259,6 +296,35 @@ class Cloud9Surface {
         page: this._page,
       }),
     )
+  }
+
+  // LEDs are driven by Companion expressions on the led0-led3 surface variables.
+  onVariableValue(name, value) {
+    const match = /^led([0-3])$/.exec(String(name))
+    if (!match) return
+    const index = Number(match[1])
+    // Keep the status LED on until led3 is given a real value; blank and
+    // unresolved expressions should not turn it off.
+    if (index === 3) {
+      const raw = String(value ?? '').trim().toLowerCase()
+      if (raw === '' || raw === '$na' || raw === 'undefined' || raw === 'null') return
+    }
+    this._externalLeds[index] = ledValue(value)
+    this._renderLeds()
+  }
+
+  _writeLed(index, on) {
+    const state = on ? 'on' : 'off'
+    if (this._ledState[index] === state) return
+    this._ledState[index] = state
+    this._enqueue(`led${index}`, () =>
+      this._write(ledPacket({ index, enable: on })),
+    )
+  }
+
+  _renderLeds() {
+    if (this._closed) return
+    for (let i = 0; i < 4; i++) this._writeLed(i, this._externalLeds[i])
   }
 
   async blank() {
@@ -673,7 +739,7 @@ const plugin = {
         surfaceLayout: LAYOUT,
         pincodeMap: PINCODE_MAP,
         configFields: CONFIG_FIELDS,
-        transferVariables: undefined,
+        transferVariables: LED_VARIABLES,
         canChangePage: { label: 'Right-side page keys change page' },
         location: null,
       },

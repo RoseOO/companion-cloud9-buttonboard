@@ -5,7 +5,7 @@
   "name": "Cloud9 Button Board",
   "shortname": "cloud9-buttonboard",
   "description": "Cloud9 / Symphony 24-button board (model 0301)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "repository": "git+https://github.com/RoseOO/companion-cloud9-buttonboard.git",
   "bugs": "https://github.com/RoseOO/companion-cloud9-buttonboard/issues",
