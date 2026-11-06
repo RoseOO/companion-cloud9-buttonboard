@@ -1,0 +1,31 @@
+{
+  "name": "companion-cloud9-buttonboard",
+  "version": "0.1.0",
+  "description": "Bitfocus Companion surface module for the Cloud9 / Symphony 24-button board (model 0301)",
+  "type": "module",
+  "main": "main.js",
+  "license": "MIT",
+  "author": "Rose O <bb21b@oldershaw.org>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoseOO/companion-cloud9-buttonboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RoseOO/companion-cloud9-buttonboard/issues"
+  },
+  "homepage": "https://github.com/RoseOO/companion-cloud9-buttonboard#readme",
+  "scripts": {
+    "validate": "node validate.js",
+    "test": "node test_standalone.js",
+    "test:plugin": "node test_plugin.js",
+    "build": "companion-surface-build",
+    "package": "companion-surface-build"
+  },
+  "dependencies": {
+    "node-hid": "^3.4.0"
+  },
+  "devDependencies": {
+    "@companion-module/tools": "^3.2.0",
+    "@companion-surface/base": "^1.4.0"
+  }
+}

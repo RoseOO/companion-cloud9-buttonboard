@@ -1,0 +1,42 @@
+{
+  "$schema": "../node_modules/@companion-surface/base/assets/manifest.schema.json",
+  "type": "surface",
+  "id": "cloud9-buttonboard",
+  "name": "Cloud9 Button Board",
+  "shortname": "cloud9-buttonboard",
+  "description": "Cloud9 / Symphony 24-button board (model 0301)",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/RoseOO/companion-cloud9-buttonboard.git",
+  "bugs": "https://github.com/RoseOO/companion-cloud9-buttonboard/issues",
+  "maintainers": [
+    {
+      "name": "Rose O",
+      "email": "bb21b@oldershaw.org",
+      "github": "RoseOO"
+    }
+  ],
+  "runtime": {
+    "type": "node26",
+    "apiVersion": "1.4.0",
+    "entrypoint": "../main.js",
+    "api": "nodejs-ipc"
+  },
+  "keywords": [
+    "cloud9",
+    "symphony",
+    "button board",
+    "turret"
+  ],
+  "products": [
+    "Cloud9 Button Board (0301)"
+  ],
+  "usbIds": [
+    {
+      "vendorId": 11394,
+      "productIds": [
+        301
+      ]
+    }
+  ]
+}
